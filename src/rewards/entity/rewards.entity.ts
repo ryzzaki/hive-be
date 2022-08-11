@@ -9,6 +9,6 @@ export class RewardsEntity extends BasicEntity {
   @Column()
   isCompleted: boolean;
 
-  @Column()
+  @Column({ nullable: true })
   amount: number;
 }
