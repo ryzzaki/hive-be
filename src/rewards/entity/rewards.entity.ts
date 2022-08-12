@@ -6,7 +6,7 @@ export class RewardsEntity extends BasicEntity {
   @Column()
   wallet: string;
 
-  @Column()
+  @Column({ default: false })
   isCompleted: boolean;
 
   @Column({ nullable: true })

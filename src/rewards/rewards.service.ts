@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   Injectable,
   InternalServerErrorException,
   OnModuleInit,
@@ -7,6 +8,7 @@ import * as ethers from 'ethers';
 import { configService } from '../config/config.service';
 import { ConfigKeys } from '../config/configKeys.enum';
 import { manager } from '../constants/manager';
+import { RewardsRepository } from './repository/rewards.repository';
 
 @Injectable()
 export class RewardsService implements OnModuleInit {
@@ -15,6 +17,10 @@ export class RewardsService implements OnModuleInit {
   private contract: ethers.Contract | null;
 
   private readonly rewardAmount = '1';
+  private readonly maxReward = 4;
+  private readonly maxSessions = 4;
+
+  constructor(private readonly rewardsRepository: RewardsRepository) {}
 
   onModuleInit() {
     this.provider = new ethers.providers.AlchemyProvider(
@@ -33,16 +39,17 @@ export class RewardsService implements OnModuleInit {
   }
 
   async start(address: string) {
-    try {
-      // first find the latest session for the address - if undefined, ignore rest
-      // check if the session is older than 25 minutes
-      // if session is not older than 25 minutes - do not start
-      // if number of rewards is already 4 in the past 24 hours, do not start
-    } catch (e) {
-      throw new InternalServerErrorException(
-        `Something went wrong ${e.message}`,
-      );
+    const result = await this.rewardsRepository.startSessionTransaction(
+      address,
+      this.maxReward,
+      this.maxSessions,
+    );
+
+    if (!result) {
+      throw new BadRequestException('Session has already started!');
     }
+
+    return result;
   }
 
   async claim(address: string) {
@@ -52,21 +59,27 @@ export class RewardsService implements OnModuleInit {
       );
     }
 
-    try {
-      // find the LATEST started session
-      // validate the time - if less than 25 minutes - nope
-      // payout the reward
-      // if number of rewards is already 4 in the past 24 hours, do not claim
-      const parsedAmount = ethers.utils.parseUnits(this.rewardAmount, 'ether');
-      const txHash = await this.contract.mintReward(address, parsedAmount, {
-        gasPrice: ethers.utils.parseUnits('50', 'gwei'),
-        gasLimit: '500000',
-      });
-      await txHash.wait();
-    } catch (e) {
-      throw new InternalServerErrorException(
-        `Something went wrong ${e.message}`,
-      );
-    }
+    return await this.rewardsRepository.completeSession(
+      address,
+      this.maxReward,
+      async () => {
+        // if the polygon transaction fails, then the entire database transaction will rollback
+        try {
+          const parsedAmount = ethers.utils.parseUnits(
+            this.rewardAmount,
+            'ether',
+          );
+          const txHash = await this.contract.mintReward(address, parsedAmount, {
+            gasPrice: ethers.utils.parseUnits('50', 'gwei'),
+            gasLimit: '500000',
+          });
+          await txHash.wait();
+        } catch (e) {
+          throw new InternalServerErrorException(
+            `Polygon Transaction Failed! ${e.message}`,
+          );
+        }
+      },
+    );
   }
 }
