@@ -1,7 +1,8 @@
-import { Column, Entity } from 'typeorm';
+import { Column, Entity, Unique } from 'typeorm';
 import { BasicEntity } from '../../utils/basic.entity';
 
 @Entity()
+@Unique('single_session', ['wallet', 'walletSession'])
 export class RewardsEntity extends BasicEntity {
   @Column()
   wallet: string;
@@ -11,4 +12,7 @@ export class RewardsEntity extends BasicEntity {
 
   @Column({ nullable: true })
   amount: number;
+
+  @Column()
+  walletSession: number;
 }

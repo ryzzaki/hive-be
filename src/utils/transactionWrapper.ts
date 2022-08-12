@@ -12,10 +12,10 @@ const transactionWrapper: TransactionWrapper = async (
 ) => {
   const qr = dataSource.createQueryRunner();
 
-  await qr.connect();
-  await qr.startTransaction();
-
   try {
+    await qr.connect();
+    await qr.startTransaction();
+
     const [result] = await Promise.all([transactionBody(qr)]);
     await qr.commitTransaction();
     return result;

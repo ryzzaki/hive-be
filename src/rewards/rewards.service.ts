@@ -8,6 +8,7 @@ import * as ethers from 'ethers';
 import { configService } from '../config/config.service';
 import { ConfigKeys } from '../config/configKeys.enum';
 import { manager } from '../constants/manager';
+import { RewardsEntity } from './entity/rewards.entity';
 import { RewardsRepository } from './repository/rewards.repository';
 
 @Injectable()
@@ -81,5 +82,25 @@ export class RewardsService implements OnModuleInit {
         }
       },
     );
+  }
+
+  async getRewardsForParticipant(
+    participant: string,
+  ): Promise<RewardsEntity[]> {
+    return this.rewardsRepository.getRewardsForParticipant(participant);
+  }
+
+  async getRewardsForParticipantToday(
+    participant: string,
+  ): Promise<{ rewards: number; sessions: number }> {
+    const existingSessions =
+      await this.rewardsRepository.getRewardsForParticipantToday(participant);
+    let amountOverLastDay = 0;
+    existingSessions.map((s) => {
+      if (s.amount && s.isCompleted) {
+        amountOverLastDay += s.amount;
+      }
+    });
+    return { rewards: amountOverLastDay, sessions: existingSessions.length };
   }
 }

@@ -10,6 +10,7 @@ async function bootstrap() {
 
   // middleware plugins
   app.use(helmet());
+  app.enableCors(configService.createCorsOptions());
 
   await app.listen(port);
 }

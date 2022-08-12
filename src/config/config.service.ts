@@ -1,5 +1,6 @@
 import { TypeOrmModuleOptions } from '@nestjs/typeorm';
 import { ConfigKeys } from './configKeys.enum';
+import { CorsOptions } from '@nestjs/common/interfaces/external/cors-options.interface';
 import { join } from 'path';
 import * as dotenv from 'dotenv';
 import * as fs from 'fs';
@@ -37,6 +38,15 @@ export class ConfigService {
 
   isTest(): boolean {
     return process.env.NODE_ENV === 'test';
+  }
+
+  createCorsOptions(): CorsOptions {
+    return {
+      credentials: true,
+      origin: this.isProduction()
+        ? [`${this.get(ConfigKeys.FE_URL)}`]
+        : [`http://localhost:3001`],
+    };
   }
 
   createTypeOrmOptions(): TypeOrmModuleOptions {

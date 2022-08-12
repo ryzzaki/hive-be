@@ -4,4 +4,5 @@ export enum ConfigKeys {
   DATABASE_URL = 'DATABASE_URL',
   API_KEY = 'API_KEY',
   PRIVATE_KEY = 'PRIVATE_KEY',
+  FE_URL = 'FE_URL',
 }
