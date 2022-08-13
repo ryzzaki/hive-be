@@ -102,7 +102,11 @@ export class RewardsRepository {
 
       // don't do anything if the latest session is not greater than 25 minutes
       // don't do anything if the latest session is already completed - avoid reward duplication
-      if (isLowerThanPomoSession || existingSessions.at(0).isCompleted) {
+      if (
+        isLowerThanPomoSession ||
+        existingSessions.length === 0 ||
+        existingSessions.at(0).isCompleted
+      ) {
         return false;
       }
 
