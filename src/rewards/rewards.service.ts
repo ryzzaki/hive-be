@@ -25,7 +25,9 @@ export class RewardsService implements OnModuleInit {
 
   onModuleInit() {
     this.provider = new ethers.providers.AlchemyProvider(
-      configService.get(ConfigKeys.IS_MAINNET) ? 'matic' : 'maticmum',
+      configService.get(ConfigKeys.NETWORK, 'mumbai') === 'mumbai'
+        ? 'maticmum'
+        : 'matic',
       configService.get(ConfigKeys.API_KEY),
     );
     this.signer = new ethers.Wallet(
