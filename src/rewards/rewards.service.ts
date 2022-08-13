@@ -72,7 +72,7 @@ export class RewardsService implements OnModuleInit {
           );
           const txHash = await this.contract.mintReward(address, parsedAmount, {
             gasPrice: ethers.utils.parseUnits('50', 'gwei'),
-            gasLimit: '500000',
+            gasLimit: '300000',
           });
           await txHash.wait();
         } catch (e) {
