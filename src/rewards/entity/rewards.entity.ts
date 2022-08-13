@@ -13,6 +13,6 @@ export class RewardsEntity extends BasicEntity {
   @Column({ nullable: true })
   amount: number;
 
-  @Column()
+  @Column({ type: 'bigint' })
   walletSession: number;
 }
