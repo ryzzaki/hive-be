@@ -25,7 +25,7 @@ export class RewardsService implements OnModuleInit {
 
   onModuleInit() {
     this.provider = new ethers.providers.AlchemyProvider(
-      configService.isProduction() ? 'matic' : 'maticmum',
+      configService.get(ConfigKeys.IS_MAINNET) ? 'matic' : 'maticmum',
       configService.get(ConfigKeys.API_KEY),
     );
     this.signer = new ethers.Wallet(
@@ -71,8 +71,8 @@ export class RewardsService implements OnModuleInit {
             'ether',
           );
           const txHash = await this.contract.mintReward(address, parsedAmount, {
-            gasPrice: ethers.utils.parseUnits('50', 'gwei'),
-            gasLimit: '300000',
+            gasPrice: ethers.utils.parseUnits('60', 'gwei'),
+            gasLimit: '450000',
           });
           await txHash.wait();
         } catch (e) {

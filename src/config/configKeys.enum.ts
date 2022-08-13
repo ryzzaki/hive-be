@@ -5,4 +5,5 @@ export enum ConfigKeys {
   API_KEY = 'API_KEY',
   PRIVATE_KEY = 'PRIVATE_KEY',
   FE_URL = 'FE_URL',
+  IS_MAINNET = 'IS_MAINNET',
 }
