@@ -1,16 +1,11 @@
 import { Injectable } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { DataSource, Between, Repository } from 'typeorm';
+import { DataSource, Between } from 'typeorm';
 import transactionWrapper from '../../utils/transactionWrapper';
 import { RewardsEntity } from '../entity/rewards.entity';
 
 @Injectable()
 export class RewardsRepository {
-  constructor(
-    @InjectRepository(RewardsEntity)
-    private readonly rewardsRepository: Repository<RewardsEntity>,
-    private readonly dataSource: DataSource,
-  ) {}
+  constructor(private readonly dataSource: DataSource) {}
 
   async startSessionTransaction(
     address: string,
