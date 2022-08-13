@@ -37,12 +37,22 @@ export class RewardsRepository {
 
       const isLowerThanPomoSession =
         existingSessions.length > 0
-          ? now - existingSessions.at(0).createdAt.getTime() > 25 * 60 * 1000
+          ? now - existingSessions.at(0).createdAt.getTime() < 25 * 60 * 1000
+          : false;
+
+      const isIncomplete =
+        existingSessions.length > 0
+          ? !existingSessions.at(0).isCompleted
           : false;
 
       // don't create a session if there are 4 sessions already, and the latest one is not greater than 25 minutes
       // to prevent the edge case of endlessly creating infinite new sessions
-      if (existingSessions.length === maxSessions || isLowerThanPomoSession) {
+      // don't create a session if the last one is incomplete
+      if (
+        existingSessions.length === maxSessions ||
+        isLowerThanPomoSession ||
+        isIncomplete
+      ) {
         return undefined;
       }
 
@@ -92,7 +102,7 @@ export class RewardsRepository {
 
       const isLowerThanPomoSession =
         existingSessions.length > 0
-          ? now - existingSessions.at(0).createdAt.getTime() > 25 * 60 * 1000
+          ? now - existingSessions.at(0).createdAt.getTime() < 25 * 60 * 1000
           : false;
 
       // don't do anything if the latest session is not greater than 25 minutes
