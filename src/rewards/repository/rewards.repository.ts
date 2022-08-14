@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { DataSource, Between } from 'typeorm';
+import { DataSource, Between, QueryRunner } from 'typeorm';
 import transactionWrapper from '../../utils/transactionWrapper';
 import { RewardsEntity } from '../entity/rewards.entity';
 
@@ -65,7 +65,7 @@ export class RewardsRepository {
         r.walletSession =
           existingSessions.length > 0
             ? String(Number(existingSessions.at(0).walletSession) + 1)
-            : '1';
+            : await this.getLastWalletSession(qr, address);
         const res = await qr.manager.insert(RewardsEntity, r);
         return res.raw.pop() as RewardsEntity;
       }
@@ -134,6 +134,20 @@ export class RewardsRepository {
         return result.affected > 0;
       }
     });
+  }
+
+  async getLastWalletSession(
+    qr: QueryRunner,
+    address: string,
+  ): Promise<string> {
+    const lastSession = await qr.manager.findOne(RewardsEntity, {
+      where: { wallet: address },
+      order: { createdAt: 'DESC' },
+    });
+    if (!lastSession) {
+      return '1';
+    }
+    return String(Number(lastSession.walletSession) + 1);
   }
 
   async getRewardsForParticipant(wallet: string): Promise<RewardsEntity[]> {
