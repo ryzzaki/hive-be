@@ -14,5 +14,5 @@ export class RewardsEntity extends BasicEntity {
   amount: number;
 
   @Column({ type: 'bigint' })
-  walletSession: number;
+  walletSession: string;
 }

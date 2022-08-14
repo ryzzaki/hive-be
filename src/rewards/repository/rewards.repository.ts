@@ -64,8 +64,8 @@ export class RewardsRepository {
         r.wallet = address;
         r.walletSession =
           existingSessions.length > 0
-            ? existingSessions.at(0).walletSession + 1
-            : 1;
+            ? String(Number(existingSessions.at(0).walletSession) + 1)
+            : '1';
         const res = await qr.manager.insert(RewardsEntity, r);
         return res.raw.pop() as RewardsEntity;
       }
