@@ -121,6 +121,7 @@ export class RewardsRepository {
         const latestSession = existingSessions[0];
         latestSession.isCompleted = true;
         latestSession.amount = 1;
+        latestSession.updatedAt = new Date();
         const result = await qr.manager.update(
           RewardsEntity,
           { id: latestSession.id },
