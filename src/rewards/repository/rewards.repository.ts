@@ -153,6 +153,9 @@ export class RewardsRepository {
   async getRewardsForParticipant(wallet: string): Promise<RewardsEntity[]> {
     return await this.dataSource.manager.find(RewardsEntity, {
       where: { wallet },
+      order: {
+        updatedAt: 'DESC',
+      },
     });
   }
 
